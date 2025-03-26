@@ -98,16 +98,16 @@ void chacha20_block(uint8_t key[32], uint32_t counter, uint8_t nonce[12], uint8_
 	uint32_t working_state[16] = {0};
 	memcpy(working_state, state, 64);
 
-	printf("\n[+] working_state: \n");
-	print_state(working_state);
+	// printf("\n[+] working_state: \n");
+	// print_state(working_state);
 
 	for (uint8_t i = 0; i < 10; i++)
 	{
 		inner_block(working_state);
 	}
 
-	printf("\n[+] state after 20 rounds:\n");
-	print_state(working_state);
+	// printf("\n[+] state after 20 rounds:\n");
+	// print_state(working_state);
 
 	add(state, working_state);
 	printf("\n[+] state at the end of the ChaCha20 operation:\n");

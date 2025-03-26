@@ -11,9 +11,9 @@ void print_state(uint32_t state[16])
 	printf("\n");
 }
 
-void print_serialized_block(uint8_t block[64])
+void print_bytes(uint8_t *block, uint8_t len)
 {
-	for (uint8_t i = 0; i < 64; i++)
+	for (uint8_t i = 0; i < len; i++)
 	{
 		if (i % 16 == 0 && i != 0)
 			printf("\n");
