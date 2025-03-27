@@ -8,22 +8,22 @@ void xor(uint8_t *input_block, uint8_t *keystream_block, uint8_t *output, size_t
 	}
 }
 
-uint8_t *chacha20(uint8_t key[32], uint32_t block_counter, uint8_t nonce[12], uint8_t *text, size_t text_len)
+uint8_t *chacha20_core(uint8_t key[32], uint32_t block_counter, uint8_t nonce[12], uint8_t *data, size_t data_len)
 {
-	uint8_t *output = malloc(text_len);
+	uint8_t *output = malloc(data_len);
 	if (!output)
 	{
 		printf("malloc failed\n");
 		return NULL;
 	}
 
-	size_t num_blocks = (text_len + 63) / 64;
+	size_t num_blocks = (data_len + 63) / 64;
 	// printf("[+] number of blocks = %ld\n", num_blocks);
 
 	for (size_t j = 0; j < num_blocks; j++)
 	{
 		size_t offset = j * 64;
-		size_t block_len = (text_len - offset >= 64) ? 64 : (text_len - offset);
+		size_t block_len = (data_len - offset >= 64) ? 64 : (data_len - offset);
 		printf("[+] block length: %ld\n", block_len);
 
 		uint8_t keystream_block[64] = {0};
@@ -34,12 +34,22 @@ uint8_t *chacha20(uint8_t key[32], uint32_t block_counter, uint8_t nonce[12], ui
 		// printf("\n[+] keystream:\n");
 		// print_bytes(keystream, 64);
 
-		uint8_t *block = &text[offset];
+		uint8_t *block = &data[offset];
 		xor(block, keystream_block, output + offset, block_len);
 
 		// block_len = nombre d'octets à traiter dans ce bloc (utile pour le dernier bloc)
 	}
 	return output;
+}
+
+uint8_t *chacha20_encrypt(uint8_t key[32], uint32_t block_counter, uint8_t nonce[12], uint8_t *data, size_t data_len)
+{
+	return chacha20_core(key, block_counter, nonce, data, data_len);
+}
+
+uint8_t *chacha20_decrypt(uint8_t key[32], uint32_t block_counter, uint8_t nonce[12], uint8_t *data, size_t data_len)
+{
+	return chacha20_core(key, block_counter, nonce, data, data_len);
 }
 
 int main()
@@ -66,7 +76,7 @@ int main()
 		0x74, 0x2e};
 
 	size_t plaintext_len = sizeof(plaintext);
-	uint8_t *ciphertext = chacha20(key, block_counter, nonce, plaintext, plaintext_len);
+	uint8_t *ciphertext = chacha20_encrypt(key, block_counter, nonce, plaintext, plaintext_len);
 	if (!ciphertext)
 		return 1;
 
@@ -74,7 +84,7 @@ int main()
 	print_bytes(ciphertext, plaintext_len);
 
 	printf("\n[+] Decrypting ciphertext...\n");
-	uint8_t *decrypted_ciphertext = chacha20(key, block_counter, nonce, ciphertext, plaintext_len);
+	uint8_t *decrypted_ciphertext = chacha20_decrypt(key, block_counter, nonce, ciphertext, plaintext_len);
 	printf("Plaintext was:\n%s\n", decrypted_ciphertext);
 
 	return 0;
