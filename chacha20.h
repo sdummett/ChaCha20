@@ -5,20 +5,17 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-
-// === chacha20 core === //
-
-void print_state(uint32_t state[16]);
-void print_bytes(uint8_t *block, uint8_t len);
-void chacha20_block(uint8_t key[32], uint32_t counter, uint8_t nonce[12], uint8_t keystream_block[64]);
-uint8_t *chacha20_core(uint8_t key[32], uint32_t block_counter, uint8_t nonce[12], uint8_t *data, size_t data_len);
-
-// ===================== //
-
 #include <getopt.h>
 #include <fcntl.h>
 #include <unistd.h>
 
+// === chacha20 core function === //
+
+uint8_t *chacha20_crypt(uint8_t key[32], uint32_t block_counter, uint8_t nonce[12], uint8_t *data, size_t data_len);
+
+// ============================== //
+
+// === The actual program === //
 #define DEFAULT_OUTPUT_FILE "data.chacha20"
 
 typedef enum e_mode

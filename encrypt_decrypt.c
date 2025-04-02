@@ -16,7 +16,7 @@ int encrypt_decrypt(program_options_t *options)
 	int fd = open(options->output_file, O_CREAT | O_WRONLY | O_EXCL, 0644);
 	if (fd < 0)
 	{
-		snprintf(error_msg, sizeof(error_msg), "[-] Opening file %s failed", options->output_file);
+		snprintf(error_msg, sizeof(error_msg), "[-] Opening file '%s' failed", options->output_file);
 		perror(error_msg);
 		free(file_data);
 		return 1;
@@ -52,16 +52,16 @@ int encrypt_decrypt(program_options_t *options)
 	// open the output file
 
 	if (options->mode == MODE_ENCRYPT)
-		printf("[+] Encrypting file %s into %s\n", options->input_file, options->output_file);
+		printf("[+] Encrypting file '%s' into '%s'\n", options->input_file, options->output_file);
 	else
-		printf("[+] Decrypting file %s into %s\n", options->input_file, options->output_file);
+		printf("[+] Decrypting file '%s' into '%s'\n", options->input_file, options->output_file);
 
 	// read the file containing the file_data to encrypt
 	size_t offset = 0;
 	if (options->mode == MODE_DECRYPT)
 		offset = sizeof(nonce);
 
-	uint8_t *ciphertext = chacha20_core(key, block_counter, nonce, file_data + offset, data_len);
+	uint8_t *ciphertext = chacha20_crypt(key, block_counter, nonce, file_data + offset, data_len);
 	if (!ciphertext)
 	{
 		fprintf(stderr, "[-] Function chacha20_core failed\n");
@@ -82,7 +82,7 @@ int encrypt_decrypt(program_options_t *options)
 		ret = write(fd, nonce, sizeof(nonce));
 		if (ret < 0)
 		{
-			snprintf(error_msg, sizeof(error_msg), "[-] Writing to file %s failed", options->output_file);
+			snprintf(error_msg, sizeof(error_msg), "[-] Writing to file '%s' failed", options->output_file);
 			perror(error_msg);
 			free(ciphertext);
 			return 1;
@@ -92,13 +92,18 @@ int encrypt_decrypt(program_options_t *options)
 	ret = write(fd, ciphertext, data_len);
 	if (ret < 0)
 	{
-		snprintf(error_msg, sizeof(error_msg), "[-] Writing to file %s failed", options->output_file);
+		snprintf(error_msg, sizeof(error_msg), "[-] Writing to file '%s' failed", options->output_file);
 		perror(error_msg);
 		free(ciphertext);
 		return 1;
 	}
 
 	free(ciphertext);
+
+	if (options->mode == MODE_ENCRYPT)
+		printf("[+] Encryption done\n");
+	else
+		printf("[+] Decryption done\n");
 
 	return 0;
 }

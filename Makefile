@@ -5,7 +5,7 @@ CC = cc
 #CFLAGS = -Wall -Wextra -Werror -Iincs
 
 SRCS = main.c \
-		chacha20_block.c \
+		chacha20_core.c \
 		encrypt_decrypt.c \
 		parse_args.c \
 		utils.c \
