@@ -42,25 +42,15 @@ uint8_t *chacha20_core(uint8_t key[32], uint32_t block_counter, uint8_t nonce[12
 	return output;
 }
 
-uint8_t *decrypt(uint8_t key[32], uint32_t block_counter, uint8_t nonce[12], uint8_t *data, size_t data_len)
-{
-	return chacha20_core(key, block_counter, nonce, data, data_len);
-}
-
 int main(int ac, char *av[])
 {
 	program_options_t options;
 	if (!parse_args(ac, av, &options))
 		return 1;
 
-	if (options.mode == MODE_ENCRYPT)
+	if (options.mode == MODE_ENCRYPT || options.mode == MODE_DECRYPT)
 	{
-		return encrypt(&options);
-	}
-	if (options.mode == MODE_DECRYPT)
-	{
-		printf("[+] Decrypting file %s into %s\n", options.input_file, options.output_file);
-		// decrypt();
+		return encrypt_decrypt(&options);
 	}
 
 	return 0;
