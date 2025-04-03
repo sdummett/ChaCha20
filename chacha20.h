@@ -8,6 +8,7 @@
 #include <getopt.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <time.h>
 
 // === chacha20 core function === //
 

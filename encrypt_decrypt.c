@@ -37,10 +37,13 @@ int encrypt_decrypt(program_options_t *options)
 	else
 	{
 		// generate a random nonce
-		uint8_t tocpy[12] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4a, 0x00, 0x00, 0x00, 0x00};
+		srand(time(NULL));
+		for (int i = 0; i < sizeof(int) * 3; i += sizeof(int))
+		{
+			int pseudo_random_number = rand();
+			memcpy(nonce + i, &pseudo_random_number, sizeof(pseudo_random_number));
+		}
 
-		memcpy(nonce, tocpy, sizeof(nonce));
-		// uint8_t nonce[12] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4a, 0x00, 0x00, 0x00, 0x00};
 		// generate_random_nonce(nonce);
 	}
 
