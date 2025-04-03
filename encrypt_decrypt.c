@@ -78,12 +78,10 @@ int encrypt_decrypt(program_options_t *options)
 	// |  uint8_t[12] |  uint8_t[]  |
 	// |    nonce     |  ciphertext |
 
-	size_t ret = 0;
 	if (options->mode == MODE_ENCRYPT)
 	{
 		// write the nonce
-		ret = write(fd, nonce, sizeof(nonce));
-		if (ret < 0)
+		if (write(fd, nonce, sizeof(nonce)) < 0)
 		{
 			snprintf(error_msg, sizeof(error_msg), "[-] Writing to file '%s' failed", options->output_file);
 			perror(error_msg);
@@ -92,8 +90,7 @@ int encrypt_decrypt(program_options_t *options)
 		}
 	}
 
-	ret = write(fd, ciphertext, data_len);
-	if (ret < 0)
+	if (write(fd, ciphertext, data_len) < 0)
 	{
 		snprintf(error_msg, sizeof(error_msg), "[-] Writing to file '%s' failed", options->output_file);
 		perror(error_msg);
