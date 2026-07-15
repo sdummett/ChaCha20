@@ -38,7 +38,7 @@ int encrypt_decrypt(program_options_t *options)
 	{
 		// generate a random nonce
 		srand(time(NULL));
-		for (int i = 0; i < sizeof(int) * 3; i += sizeof(int))
+		for (size_t i = 0; i < sizeof(int) * 3; i += sizeof(int))
 		{
 			int pseudo_random_number = rand();
 			memcpy(nonce + i, &pseudo_random_number, sizeof(pseudo_random_number));
