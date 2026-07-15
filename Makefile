@@ -1,39 +1,36 @@
-NAME = chacha20
+SRC_DIR   := srcs
+INC_DIR   := incs
+BUILD_DIR := objs
 
-CC = cc
+TARGET := chacha20
 
-#CFLAGS = -Wall -Wextra -Werror -Iincs
+SRCS := $(wildcard $(SRC_DIR)/*.c)
+OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
 
-SRCS = main.c \
-		chacha20_core.c \
-		encrypt_decrypt.c \
-		parse_args.c \
-		utils.c \
+CC      := cc
+CFLAGS  := -Wall -Wextra -std=c11 -I$(INC_DIR)
+DEBUG_CFLAGS := $(CFLAGS) -g3
 
-OBJS = $(addprefix objs/,$(SRCS:.c=.o))
-OBJ_DIRS = $(sort $(dir $(OBJS)))
+.PHONY: all debug clean fclean re
 
-objs/%.o : %.c | $(OBJ_DIRS)
-	$(CC) -I. -c $(CFLAGS) $< -o $@
+all: $(TARGET)
 
+$(TARGET): $(OBJS)
+	$(CC) $(OBJS) -o $@
 
-$(NAME) : $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(wildcard $(INC_DIR)/*.h) | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIRS):
-	mkdir -p $@
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
 
-all: $(NAME)
-
-debug: CFLAGS += -g3
-debug: $(NAME)
+debug: CFLAGS := $(DEBUG_CFLAGS)
+debug: clean all
 
 clean:
-	rm -rf objs
+	rm -f $(OBJS)
 
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(TARGET)
 
 re: fclean all
-
-.PHONY: all clean fclean re test debug
